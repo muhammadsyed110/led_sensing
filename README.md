@@ -7,3 +7,6 @@ here is the sample input data and its output
 
 
 ![alt text](image.png)
+
+Based on the input data the device gives us this output,
+we take average of 5 inputs and we get a 25 x 25 Array
