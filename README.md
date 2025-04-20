@@ -12,7 +12,7 @@ The input data is collected using MATLAB from the sensing device.
 
 ### Sample Input and Output
 
-Below is an example of the raw input and the corresponding output:
+Below is an example of the Physical setup of the LED Matrix with object position considered as input and the corresponding output
 
 ![Raw Input](image.png)
 
@@ -21,6 +21,9 @@ The device processes this input and returns a **25x25** array. To reduce noise, 
 ![Processed Output](img.png)
 
 ---
+After this I processed this 25x25 matrix into a 25x25 binary image using the MATLAB Image creation Pipeline.
+Below is an example of a 25x25 binary image.
+![img_1.png](img_1.png)
 
 ## 🛠️ Preprocessing and Model Training
 
