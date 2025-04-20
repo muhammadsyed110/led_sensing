@@ -26,6 +26,9 @@ Below is an example of a 25x25 binary image.
 ![img_1.png](img_1.png)
 
 ## 🛠️ Preprocessing and Model Training
+## 📓 Jupyter Notebooks
+
+Check out the notebooks in the [jupyterNotebooks folder](./jupyterNotebooks/).
 
 ### 🔄 Preprocessing
 - Convert the 25x25 matrix into an image.
