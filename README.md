@@ -1,12 +1,41 @@
-# led_sensing
-LED Matrix Data as an Image Segmentation Pipeline with U-Net Model Trained for Object Detection.
+# LED Sensing
 
-First we will collect data from the deivce using matlab
+**LED Matrix Data for Image Segmentation using a U-Net Model for Object Detection**
 
-here is the sample input data and its output 
+This project utilizes data collected from an LED matrix-based sensing device and processes it through an image segmentation pipeline using a U-Net model to detect object positions.
 
+---
 
-![alt text](image.png)
+## 📡 Data Collection
 
-Based on the input data the device gives us this output,
-we take average of 5 inputs and we get a 25 x 25 Array
+The input data is collected using MATLAB from the sensing device.
+
+### Sample Input and Output
+
+Below is an example of the raw input and the corresponding output:
+
+![Raw Input](image.png)
+
+The device processes this input and returns a **25x25** array. To reduce noise, we take the **average of 5 consecutive readings**:
+
+![Processed Output](img.png)
+
+---
+
+## 🛠️ Preprocessing and Model Training
+
+### 🔄 Preprocessing
+- Convert the 25x25 matrix into an image.
+- Rescale the image to match the input size required by the model.
+
+### 🏷️ Labeling
+- Annotate each preprocessed image with ground truth data representing the object’s location.
+
+### 🧠 Model Training
+- Train a **U-Net model** using the labeled dataset.
+- The model learns to predict the position of the object in new unseen input arrays.
+
+---
+
+## 📁 Project Structure (optional)
+
