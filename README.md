@@ -1,3 +1,124 @@
+# 🔬 LED Matrix Data Collection & Preprocessing Pipeline (MATLAB)
+
+This stage of the pipeline handles real-world data collection from an LED matrix and photodiode hardware setup, using MATLAB. It creates, averages, and visualizes raw sensing data, and then prepares image and mask files for machine learning.
+
+---
+
+## ⚙️ Pipeline Overview
+
+📡 Data Collection (.m) └── 🧾 Physical Setup (.txt) └── 📊 Data Visualization (.m) └── 🖼️ Image + Mask Creation & Dataset Split (.m)
+
+
+---
+
+## 📁 MATLAB Files Breakdown
+
+### 1️⃣ [`Collect_Multiple_Data.m`](./Collect_Multiple_Data.m)
+
+
+
+#### **Purpose:**
+- Collects N (user-defined) measurements from the hardware via serial communication.
+- Stores data in an Excel file with time-based naming.
+- Averages across all measurements to reduce noise.
+- Writes hardware configuration details into the Excel file.
+
+#### **Key Functions:**
+- `Initialize_Device()` – Connects to the Arduino.
+- `collect_data()` – Collects sensor data for a 5x5 LED/diode grid.
+- `Average()` – Averages readings from multiple Excel sheets.
+- `Arduino_Data_Collection_L()` / `D()` – Control which device remains fixed during data collection (LED or Diode).
+
+---
+
+### 2️⃣ [`Physical_Setup.txt`](./Physical_Setup.txt)
+
+![img_2.png](img_2.png)
+
+#### **Purpose:**
+Defines physical parameters and grid layout of the experiment.
+
+#### **Includes:**
+- Object size (e.g., 3x3x5 cm)
+- 13x15 grid layout with binary object occupancy matrix
+- LED/diode method used (fixed LED or diode)
+- Exact (x, y) positions of 5x5 LEDs
+- Material type and shape
+- Metadata like delay time, sample count, etc.
+
+✅ This setup file is read and verified in `Collect_Multiple_Data.m`.
+
+---
+
+### 3️⃣ [`Data_Collection_Visualization.m`](./Data_Collection_Visualization.m)
+
+#### **Purpose:**
+Visualizes collected data from the Excel file.
+
+#### **Features:**
+- User chooses heatmap or graph visualization.
+- Can visualize individual or all sheets.
+- Shows sensor values in 5x5 grid layout.
+- Displays values scaled to 0–1024.
+- Also prints physical setup info to console or GUI.
+
+---
+
+### 4️⃣ [`Data_Image_Mask.m`](./Data_Image_Mask.m)
+
+#### **Purpose:**
+Processes the Excel files to create image/mask datasets.
+
+#### **Steps:**
+1. **Reads binary matrix from `Physical_Setup` sheet**  
+   → Generates **mask images** (binary object segmentation).
+
+2. **Reads averaged sensor data**  
+   → Converts to **grayscale images** for model input.
+
+3. **Preprocessing:**  
+   - Resizes and normalizes images.
+   - Converts each `.xlsx` file into multiple `.png` images.
+
+4. **Dataset Split:**  
+   - Shuffles and splits all images/masks into:
+     - `train/`
+     - `val/`
+     - `test/`
+
+✅ Output ready for training with U-Net model or other segmentation frameworks.
+
+---
+
+## 🗂️ Output Structure
+
+📁 99-ImagePreProcessing/ ├── Images/ └── Masks/ 📁 99-Splited_Data(for training)/ ├── train/ ├── val/ └── test/
+
+
+---
+
+## 🔧 Requirements
+
+To run these files, make sure you have:
+- MATLAB (R2020+ recommended)
+- A working serial connection to the LED/photodiode hardware
+- Excel installed (for reading/writing `.xlsx`)
+- Properly updated file paths in the `.m` scripts
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
 # LED Sensing
 
 **LED Matrix Data for Image Segmentation using a U-Net Model for Object Detection**
@@ -33,6 +154,11 @@ Check out the notebooks in the folder [jupyterNotebooks](./jupyterNotebooks/).
 ### 🔄 Preprocessing
 - Convert the 25x25 matrix into an image.
 - Rescale the image to match the input size required by the model.
+
+### Data Preprocessing
+
+X = X.reshape(-1, 25, 25, 1)
+Y = Y.reshape(-1, 25, 25, 1)
 
 ### 🏷️ Labeling
 - Annotate each preprocessed image with ground truth data representing the object’s location.
