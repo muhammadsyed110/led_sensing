@@ -132,7 +132,7 @@ This part of the project focuses on detecting object positions from preprocessed
 
 ## 🔁 Pipeline Flow
 
-```mermaid
+```
 graph TD;
     A[Grayscale Images & Binary Masks] --> B[Data Preprocessing]
     B --> C[U-Net Model Training]
@@ -155,7 +155,7 @@ Converts mask to binary format
 Splits data into train, val, and test sets
 
 🧪 Example Code Snippets:
-```mermaid
+```
 # Load images and masks
 image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
@@ -170,7 +170,7 @@ image = image / 255.0
 # Convert mask to binary
 mask = (mask > 127).astype(np.uint8)
 ```
-```mermaid
+```
 # Train-validation-test split
 from sklearn.model_selection import train_test_split
 
@@ -194,14 +194,14 @@ Monitors performance with training curves
 Saves the best performing model
 
 ### 🧪 Example Code Snippets:
-```mermaid
+```
 def unet_model(input_size=(128,128,1)):
     inputs = Input(input_size)
     # ... Add convolution, pooling, upsampling layers ...
     outputs = Conv2D(1, (1, 1), activation='sigmoid')(conv7)
     return Model(inputs=[inputs], outputs=[outputs])
 ```
-```mermaid
+```
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 history = model.fit(
@@ -226,13 +226,13 @@ Displays input image, ground truth, and prediction side-by-side
 Computes evaluation metrics (IoU, Dice, etc.)
 
 ### 🧪 Example Code Snippets:
-```mermaid
+```
 model = tf.keras.models.load_model('unet_model.h5')
 
 pred = model.predict(np.expand_dims(X_test[0], axis=0))
 pred_mask = (pred[0] > 0.5).astype(np.uint8)
 ```
-```mermaid
+```
 # Visualize results
 plt.figure(figsize=(10, 4))
 plt.subplot(1, 3, 1)
@@ -253,15 +253,15 @@ plt.show()
 ### ⚙️ Installation
 ### 🐍 Required Python Libraries
 Create a virtual environment (optional but recommended):
-```mermaid
+```
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 ```
-```mermaid
+```
 pip install numpy matplotlib opencv-python scikit-learn tensorflow
 ```
 Or use:
-```mermaid
+```
 pip install -r requirements.txt
 ```
 ### 🚀 Running the Pipeline
