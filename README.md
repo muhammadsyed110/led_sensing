@@ -13,7 +13,7 @@ This stage of the pipeline handles real-world data collection from an LED matrix
 
 ## 📁 MATLAB Files Breakdown
 
-### 1️⃣ [`Collect_Multiple_Data.m`](./Collect_Multiple_Data.m)
+### 1️⃣ [`Collect_Multiple_Data.m`](./matlabPipeline/Collect_Multiple_Data.m)
 
 #### **Purpose:**
 - Collects N (user-defined) measurements from the hardware via serial communication.
@@ -31,7 +31,7 @@ This stage of the pipeline handles real-world data collection from an LED matrix
 
 ---
 
-### 2️⃣ [`Physical_Setup.txt`](./Physical_Setup.txt)
+### 2️⃣ [`Physical_Setup.txt`](./matlabPipeline/Physical_Setup.txt)
 
 #### **Purpose:**
 Defines physical parameters and grid layout of the experiment.
@@ -50,7 +50,7 @@ Defines physical parameters and grid layout of the experiment.
 
 ---
 
-### 3️⃣ [`Data_Collection_Visualization.m`](./Data_Collection_Visualization.m)
+### 3️⃣ [`Data_Collection_Visualization.m`](./matlabPipeline/Data_Collection_Visualization.m)
 
 #### **Purpose:**
 Visualizes collected data from the Excel file.
@@ -72,7 +72,7 @@ Visualizes collected data from the Excel file.
 ![Overall_Graph_LED_Matrix_2025_02_24_23_24_01.jpg](Overall_Graph_LED_Matrix_2025_02_24_23_24_01.jpg)
 ---
 
-### 4️⃣ [`Data_Image_Mask.m`](./Data_Image_Mask.m)
+### 4️⃣ [`Data_Image_Mask.m`](./matlabPipeline/Data_Image_Mask.m)
 
 #### **Purpose:**
 Processes the Excel files to create image/mask datasets.
@@ -81,8 +81,12 @@ Processes the Excel files to create image/mask datasets.
 1. **Reads binary matrix from `Physical_Setup` sheet**  
    → Generates **mask images** (binary object segmentation).
 
+![img_4.png](img_4.png)
+
 2. **Reads averaged sensor data**  
    → Converts to **grayscale images** for model input.
+
+![img_5.png](img_5.png)
 
 3. **Preprocessing:**  
    - Resizes and normalizes images.
@@ -143,11 +147,8 @@ The input data is collected using MATLAB from the sensing device.
 
 Below is an example of the Physical setup of the LED Matrix with object position considered as input and the corresponding output
 
-![Raw Input](image.png)
 
 The device processes this input and returns a **25x25** array. To reduce noise, we take the **average of 5 consecutive readings**:
-
-![Processed Output](img.png)
 
 ---
 After this I processed this 25x25 matrix into a 25x25 binary image using the MATLAB Image creation Pipeline.
