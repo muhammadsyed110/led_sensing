@@ -44,4 +44,51 @@ Check out the notebooks in the folder [jupyterNotebooks](./jupyterNotebooks/).
 ---
 
 ## 📁 Project Structure (optional)
+# 🔁 LED Matrix Object Detection Pipeline
 
+This repository follows a 3-step pipeline using Jupyter notebooks to perform object detection with LED matrix data using a U-Net model.
+
+---
+
+## 🧩 Pipeline Overview
+
+1. **Data Preprocessing**
+2. **Model Training**
+3. **Prediction & Inference**
+
+---
+
+## 📁 Notebook Breakdown
+
+### 1️⃣ [01-Data_Preprocessing.ipynb](./jupyterNotebooks/01-Data_Preprocessing.ipynb)
+
+#### **Purpose**  
+Prepares raw LED matrix data for training. This includes:
+- Reading and importing raw `.mat` files or numerical arrays.
+- Averaging multiple readings to smooth the data.
+- Converting matrix data to grayscale images.
+- Saving preprocessed data in image format for labeling and training.
+
+---
+
+### 2️⃣ [02-LED_Matrix_Train_Model.ipynb](./jupyterNotebooks/02-LED_Matrix_Train_Model.ipynb)
+
+#### **Purpose**  
+Trains a U-Net model on the preprocessed LED matrix data.
+
+- Loads labeled training data.
+- Defines the U-Net architecture.
+- Trains the model using segmentation masks.
+- Saves the trained model weights for future inference.
+
+---
+
+### 3️⃣ [03-LED_Matrix_Prediction.ipynb](./jupyterNotebooks/03-LED_Matrix_Prediction.ipynb)
+
+#### **Purpose**  
+Uses the trained model to predict object locations from new LED matrix input.
+
+- Loads new/unseen LED matrix data.
+- Preprocesses the input for prediction.
+- Uses the trained U-Net model to make segmentation predictions.
+- Visualizes predicted vs. actual locations.
