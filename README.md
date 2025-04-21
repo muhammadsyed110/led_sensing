@@ -86,7 +86,7 @@ Processes the Excel files to create image/mask datasets.
 2. **Reads averaged sensor data**  
    → Converts to **grayscale images** for model input.
 
-![img_5.png](img_5.png)
+![img_6.png](img_6.png)
 
 3. **Preprocessing:**  
    - Resizes and normalizes images.
