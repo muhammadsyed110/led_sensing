@@ -15,8 +15,6 @@ This stage of the pipeline handles real-world data collection from an LED matrix
 
 ### 1️⃣ [`Collect_Multiple_Data.m`](./Collect_Multiple_Data.m)
 
-
-
 #### **Purpose:**
 - Collects N (user-defined) measurements from the hardware via serial communication.
 - Stores data in an Excel file with time-based naming.
@@ -28,12 +26,12 @@ This stage of the pipeline handles real-world data collection from an LED matrix
 - `collect_data()` – Collects sensor data for a 5x5 LED/diode grid.
 - `Average()` – Averages readings from multiple Excel sheets.
 - `Arduino_Data_Collection_L()` / `D()` – Control which device remains fixed during data collection (LED or Diode).
+- 
+![img_3.png](img_3.png)
 
 ---
 
 ### 2️⃣ [`Physical_Setup.txt`](./Physical_Setup.txt)
-
-![img_2.png](img_2.png)
 
 #### **Purpose:**
 Defines physical parameters and grid layout of the experiment.
@@ -47,6 +45,8 @@ Defines physical parameters and grid layout of the experiment.
 - Metadata like delay time, sample count, etc.
 
 ✅ This setup file is read and verified in `Collect_Multiple_Data.m`.
+
+![img_2.png](img_2.png)
 
 ---
 
@@ -62,6 +62,14 @@ Visualizes collected data from the Excel file.
 - Displays values scaled to 0–1024.
 - Also prints physical setup info to console or GUI.
 
+### **HeatMap**
+![Heatmap_LED_Matrix_2025_02_24_23_24_01.jpg](Heatmap_LED_Matrix_2025_02_24_23_24_01.jpg)
+
+### **Graph**
+![Graph_LED_Matrix_2025_02_24_23_24_01.jpg](Graph_LED_Matrix_2025_02_24_23_24_01.jpg)
+
+### **Overall Graph**
+![Overall_Graph_LED_Matrix_2025_02_24_23_24_01.jpg](Overall_Graph_LED_Matrix_2025_02_24_23_24_01.jpg)
 ---
 
 ### 4️⃣ [`Data_Image_Mask.m`](./Data_Image_Mask.m)
