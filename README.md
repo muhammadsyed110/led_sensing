@@ -132,7 +132,7 @@ This part of the project focuses on detecting object positions from preprocessed
 
 ## 🔁 Pipeline Flow
 
-```
+```mermaid
 graph TD;
     A[Grayscale Images & Binary Masks] --> B[Data Preprocessing]
     B --> C[U-Net Model Training]
