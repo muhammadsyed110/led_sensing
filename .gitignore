@@ -7,3 +7,8 @@
 /cnn_model/dataset.csv
 /cnn_model/cnn_model.h5
 /cnn_model/label_mapping.pkl
+/cnn_model/dataset - Copy.csv
+/cnn_model/y_scaler.pkl
+/cnn_model/regression_model.h5
+/cnn_model/regression_model.keras
+/cnn_model/x_scaler.pkl
