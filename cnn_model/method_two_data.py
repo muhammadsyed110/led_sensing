@@ -11,7 +11,7 @@ BAUD_RATE = 115200
 NUM_ROWS = 5
 NUM_COLS = 5
 CSV_PATH = 'dataset.csv'
-NUM_ITERATIONS = 10
+NUM_ITERATIONS = 1
 
 # Ground truth LED mask (can be updated per test)
 LED_MASK = np.array([

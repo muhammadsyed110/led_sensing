@@ -20,7 +20,7 @@ SCALER_FILE = 'x_scaler.pkl'
 
 
 # === Load and Prepare Data ===
-def load_data(path='dataset.csv'):
+def load_data(path='dataset_fixed.csv'):
     df = pd.read_csv(path)
 
     # Sensor readings as input, LED state as output
@@ -90,7 +90,7 @@ def predict_new_sample(sensor_values):
 # === Main Execution ===
 if __name__ == '__main__':
     # Optionally train the model
-    # train_and_evaluate()
+    #train_and_evaluate()
 
     # Get live 5x5 sensor readings
     sensor_matrix = collect_sensor_matrix()  # Shape (5, 5)
