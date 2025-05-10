@@ -11,15 +11,15 @@ BAUD_RATE = 115200
 NUM_ROWS = 5
 NUM_COLS = 5
 CSV_PATH = 'dataset.csv'
-NUM_ITERATIONS = 20
+NUM_ITERATIONS = 1
 
 # Ground truth matrix (you can update as needed)
 X = np.array([
+    [0, 0, 0, 1, 1],
+    [0, 0, 0, 1, 1],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0]
+    [0, 0, 0, 0, 0]
 ])
 
 
@@ -31,15 +31,21 @@ def collect_sensor_matrix():
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     time.sleep(2)
 
-    # 🔆 Activate desired LEDs first
-    led_indices = [1]  # You can make this dynamic later
+    # 🔆 Convert X matrix (1s) to LED indices (1–25)
+    led_indices = []
+    for i in range(NUM_ROWS):
+        for j in range(NUM_COLS):
+            if X[i, j] == 1:
+                led_index = i * NUM_COLS + j + 1  # index from 1 to 25
+                led_indices.append(led_index)
+
+    # 🔆 Activate selected LEDs
     for index in led_indices:
-        if 1 <= index <= 25:
-            row = (index - 1) // 5 + 1
-            col = (index - 1) % 5 + 1
-            cmd = f'LOX{row}{col}\n'.encode()
-            ser.write(cmd)
-            time.sleep(0.02)
+        row = (index - 1) // 5 + 1
+        col = (index - 1) % 5 + 1
+        cmd = f'LOX{row}{col}\n'.encode()
+        ser.write(cmd)
+        time.sleep(0.02)
 
     # 🟢 Now collect photodiode matrix
     matrix = np.zeros((NUM_ROWS, NUM_COLS))
