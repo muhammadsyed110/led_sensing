@@ -5,43 +5,33 @@ const int RESET_PIN = 2;
 const int CLK_PIN   = 4;
 const int DATA_PIN  = 5;
 const int LATCH_PIN = 3;
-const int PWM_PIN   = 9;  // Timer1 controlled PWM pin
+const int PWM_PIN   = 9;
 
-// Initialize the 24-bit state variable
-unsigned long state = 0xe893e0;
+unsigned long state = 0xE893E0;
 
 String DON_Buff;
 String LOX_Buff;
 String Overall_Buffer;
 
-// Macros for bit manipulation
 #define SET_BIT_HIGH(var, bit) (var |=  (1UL << bit))
 #define SET_BIT_LOW( var, bit) (var &= ~(1UL << bit))
 
 void setup() {
-  // Set pin modes
   pinMode(RESET_PIN, OUTPUT);
   pinMode(CLK_PIN,   OUTPUT);
   pinMode(DATA_PIN,  OUTPUT);
   pinMode(LATCH_PIN, OUTPUT);
   pinMode(PWM_PIN,   OUTPUT);
-  digitalWrite(PWM_PIN, HIGH); // Turn LEDs on if any
+  digitalWrite(PWM_PIN, HIGH);
 
-  // Start serial communication
   Serial.begin(115200);
 
-  // Reset and setup shift register
   resetAndLatch();
-  
-  // Send initial state to shift register
   shiftOutState();
-
-  // Setup Timer1 for 35 kHz PWM
   setupTimer1ForPWM();
 }
 
 void loop() {
-  // Check for incoming Serial commands
   if (Serial.available() > 0) {
     String command = Serial.readStringUntil('\n');
 
@@ -51,31 +41,23 @@ void loop() {
       int row = command.charAt(3) - '0';
       int col = command.charAt(4) - '0';
       if (row >= 1 && row <= 5 && col >= 1 && col <= 5) {
-        // PD bit positions 10–19
-        int rowBit = 10 + (row - 1);
-        int colBit = 15 + (col - 1);
-        // switch off all PD bits
         for (int b = 10; b <= 14; b++) SET_BIT_LOW(state, b);
         for (int b = 15; b <= 19; b++) SET_BIT_HIGH(state, b);
-        // switch on requested PD
+        int rowBit = 10 + (row - 1);
+        int colBit = 15 + (col - 1);
         SET_BIT_HIGH(state, rowBit);
         SET_BIT_LOW (state, colBit);
       }
     }
 
-    // --- handle LED matrix ("LOXxy") ---
+    // --- handle LED matrix ("LOXxy") — now cumulative ---
     if (command.startsWith("LOX")) {
       LOX_Buff = command.substring(0, 5);
       int row = command.charAt(3) - '0';
       int col = command.charAt(4) - '0';
       if (row >= 1 && row <= 5 && col >= 1 && col <= 5) {
-        // LED bit positions 0–9
         int rowBit = (row - 1);
         int colBit = 5 + (col - 1);
-        // switch off all LED bits
-        for (int b = 0; b <= 4; b++) SET_BIT_LOW(state, b);
-        for (int b = 5; b <= 9; b++) SET_BIT_HIGH(state, b);
-        // switch on requested LED
         SET_BIT_HIGH(state, rowBit);
         SET_BIT_LOW (state, colBit);
       }
@@ -86,6 +68,7 @@ void loop() {
       for (int b = 0; b <= 4; b++) SET_BIT_LOW(state, b);
       for (int b = 5; b <= 9; b++) SET_BIT_HIGH(state, b);
     }
+
     // Turn specific LED on/off ("LONxy" / "LOFxy")
     else if (command.length() == 5 &&
              (command.startsWith("LON") || command.startsWith("LOF"))) {
@@ -105,24 +88,16 @@ void loop() {
       }
     }
 
-    // --- update hardware & read sensor with software tweak ---
     shiftOutState();
-    
-    // (A) allow outputs to settle
     delayMicroseconds(200);
-    
-    // dummy read to clear any first-sample anomaly
-    analogRead(A0);
-    
-    // true averaging loop
-    float a   = 0.0;
-    int   Num = 100; 
-    for (int i = 0; i < Num; i++) {
+    analogRead(A0);  // dummy
+
+    float a = 0.0;
+    for (int i = 0; i < 100; i++) {
       a += analogRead(A0);
     }
-    float avg = a / Num;
-    
-    // convert to string and send back
+    float avg = a / 100;
+
     char str[10];
     dtostrf(avg, 3, 3, str);
     Overall_Buffer = LOX_Buff + "," + DON_Buff + "," + str;
@@ -130,7 +105,6 @@ void loop() {
   }
 }
 
-// shift the 24-bit state out to the shift-register chain
 void shiftOutState() {
   digitalWrite(LATCH_PIN, LOW);
   for (int i = 23; i >= 0; i--) {
@@ -143,18 +117,16 @@ void shiftOutState() {
   digitalWrite(LATCH_PIN, LOW);
 }
 
-// configure Timer1 for ~35 kHz PWM on pin 9
 void setupTimer1ForPWM() {
-  TCCR1A = 0; 
+  TCCR1A = 0;
   TCCR1B = 0;
   TCCR1A |= _BV(WGM11);
   TCCR1B |= _BV(WGM12) | _BV(WGM13) | _BV(CS10);
-  ICR1   = 454;      // TOP = (16MHz / 35kHz) – 1
-  OCR1A  = 454;      // 50% duty
+  ICR1   = 454;
+  OCR1A  = 454;
   TCCR1A |= _BV(COM1A1);
 }
 
-// reset the shift-register then latch low
 void resetAndLatch() {
   digitalWrite(LATCH_PIN, LOW);
   digitalWrite(RESET_PIN, LOW);

@@ -15,19 +15,33 @@ NUM_ITERATIONS = 20
 
 # Ground truth matrix (you can update as needed)
 X = np.array([
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0]
 ])
 
 
+
+
+
 def collect_sensor_matrix():
-    """Reads 5x5 sensor matrix from serial."""
+    """Activates LEDs and reads 5x5 sensor matrix from serial."""
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     time.sleep(2)
 
+    # 🔆 Activate desired LEDs first
+    led_indices = [1]  # You can make this dynamic later
+    for index in led_indices:
+        if 1 <= index <= 25:
+            row = (index - 1) // 5 + 1
+            col = (index - 1) % 5 + 1
+            cmd = f'LOX{row}{col}\n'.encode()
+            ser.write(cmd)
+            time.sleep(0.02)
+
+    # 🟢 Now collect photodiode matrix
     matrix = np.zeros((NUM_ROWS, NUM_COLS))
     for row in range(1, NUM_ROWS + 1):
         for col in range(1, NUM_COLS + 1):
@@ -41,8 +55,10 @@ def collect_sensor_matrix():
                 val = 0
             matrix[row - 1, col - 1] = val
             time.sleep(0.1)
+
     ser.close()
     return matrix
+
 
 
 def save_sample_to_csv(X, Y, path=CSV_PATH):
