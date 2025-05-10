@@ -4,3 +4,6 @@
 /train.py
 /cnn_model/.ipynb_checkpoints/cnn_model-checkpoint.ipynb
 ~$*
+/cnn_model/dataset.csv
+/cnn_model/cnn_model.h5
+/cnn_model/label_mapping.pkl
