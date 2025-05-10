@@ -18,9 +18,9 @@ NUM_ITERATIONS = 1
 # Ground truth matrix (adjust based on object position)
 X = np.array([
     [0, 0, 0, 0, 0],
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0],
     [0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1],
+    [0, 0, 0, 1, 1],
     [0, 0, 0, 0, 0]
 ])
 

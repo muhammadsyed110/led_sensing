@@ -16,8 +16,8 @@ NUM_ITERATIONS = 1
 # Ground truth matrix (you can update as needed)
 X = np.array([
     [0, 0, 0, 0, 0],
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0],
+    [0, 0, 0, 1, 1],
+    [0, 0, 0, 1, 1],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0]
 ])
