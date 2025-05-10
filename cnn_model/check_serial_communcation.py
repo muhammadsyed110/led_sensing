@@ -16,10 +16,10 @@ NUM_ITERATIONS = 1
 # Ground truth matrix (you can update as needed)
 X = np.array([
     [0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1],
-    [0, 0, 0, 1, 1],
     [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1],
+    [0, 0, 0, 1, 1]
 ])
 
 
@@ -31,21 +31,12 @@ def collect_sensor_matrix():
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     time.sleep(2)
 
-    # 🔆 Convert X matrix (1s) to LED indices (1–25)
-    led_indices = []
-    for i in range(NUM_ROWS):
-        for j in range(NUM_COLS):
-            if X[i, j] == 1:
-                led_index = i * NUM_COLS + j + 1  # index from 1 to 25
-                led_indices.append(led_index)
-
-    # 🔆 Activate selected LEDs
-    for index in led_indices:
-        row = (index - 1) // 5 + 1
-        col = (index - 1) % 5 + 1
-        cmd = f'LOX{row}{col}\n'.encode()
-        ser.write(cmd)
-        time.sleep(0.02)
+    # 🔆 Turn on ALL LEDs (LOX11 to LOX55)
+    for row in range(1, NUM_ROWS + 1):
+        for col in range(1, NUM_COLS + 1):
+            cmd = f'LOX{row}{col}\n'.encode()
+            ser.write(cmd)
+            time.sleep(0.02)
 
     # 🟢 Now collect photodiode matrix
     matrix = np.zeros((NUM_ROWS, NUM_COLS))
@@ -122,5 +113,23 @@ def run_collection_loop(X, num_runs=20):
         input("➡️ Press Enter to capture next sample...")
 
 
+def activate_leds_from_matrix(X):
+    """Takes a 5x5 numpy array (X) and turns ON LEDs where X[row, col] == 1"""
+    ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
+    time.sleep(2)
+
+    for row in range(NUM_ROWS):
+        for col in range(NUM_COLS):
+            if X[row, col] == 1:
+                # Convert to 1-based indexing for LOXxy
+                cmd = f'LOX{row + 1}{col + 1}\n'.encode()
+                print(f"🔆 Turning ON LED at Row {row+1}, Col {col+1}")
+                ser.write(cmd)
+                time.sleep(0.05)  # Allow time for shift register to latch
+
+    ser.close()
+
 if __name__ == "__main__":
+    activate_leds_from_matrix(X)
+    time.sleep(2)
     run_collection_loop(X, NUM_ITERATIONS)
