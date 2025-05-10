@@ -81,6 +81,11 @@ def predict_new_sample(sensor_matrix):
     print(f"🔍 Predicted object mask: {predicted_label}")
     return predicted_label
 
+def visualize_mask(mask_str):
+    mask_array = np.array([int(c) for c in mask_str]).reshape(NUM_ROWS, NUM_COLS)
+    print("📌 Predicted Object Position Mask:")
+    print(mask_array)
+
 
 if __name__ == '__main__':
     #model = train_and_evaluate()
@@ -91,3 +96,7 @@ if __name__ == '__main__':
 
     live_matrix = collect_sensor_matrix()
     predict_new_sample(live_matrix)
+
+    predicted_label = predict_new_sample(live_matrix)
+    visualize_mask(predicted_label)
+
