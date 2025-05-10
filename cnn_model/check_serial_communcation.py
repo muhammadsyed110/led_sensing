@@ -15,11 +15,11 @@ NUM_ITERATIONS = 1
 
 # Ground truth matrix (you can update as needed)
 X = np.array([
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1],
-    [0, 0, 0, 1, 1]
+    [0, 0, 0, 0, 0]
 ])
 
 
@@ -38,6 +38,7 @@ def collect_sensor_matrix():
             ser.write(cmd)
             time.sleep(0.02)
 
+    time.sleep(2)
     # 🟢 Now collect photodiode matrix
     matrix = np.zeros((NUM_ROWS, NUM_COLS))
     for row in range(1, NUM_ROWS + 1):
