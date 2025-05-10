@@ -1,129 +1,104 @@
 import serial
 import time
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-# === Step 1: Define the Ground Truth Matrix ===
-# 1 where object is present, 0 otherwise
-X = np.array([
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0]
-])
-
-# === Step 2: Serial Configuration ===
-COM_PORT = 'COM3'  # Change this if needed
+# Configuration
+COM_PORT = 'COM3'
 BAUD_RATE = 115200
 NUM_ROWS = 5
 NUM_COLS = 5
+CSV_PATH = 'dataset.csv'
+NUM_ITERATIONS = 20
 
-# === Step 3: Collect Photodiode Readings ===
-ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
-time.sleep(2)
-
-matrix = np.zeros((NUM_ROWS, NUM_COLS))
-for row in range(1, NUM_ROWS + 1):
-    for col in range(1, NUM_COLS + 1):
-        cmd = f'DON{row}{col}\n'.encode()
-        ser.write(cmd)
-        line = ser.readline().decode().strip()
-        print(line)
-        try:
-            val = float(line.split(',')[-1])
-        except:
-            val = 0
-        matrix[row - 1, col - 1] = val
-        time.sleep(0.1)
-ser.close()
-
-# === Step 4: Show Both Matrices ===
-print("X (Object Position):")
-print(X)
-
-print("\nY (Photodiode Readings):")
-print(matrix)
-
-# === Step 5: Plot the Input (X) Matrix ===
-plt.figure(figsize=(5, 4))
-plt.imshow(X, cmap='gray_r', interpolation='nearest')
-plt.title("Input X (Object Position)")
-plt.xlabel("Column")
-plt.ylabel("Row")
-plt.colorbar(label='Object (1=present)')
-plt.grid(False)
-plt.show()
-
-# === Step 6: Plot the Output (Y) Matrix ===
-fig, ax = plt.subplots()
-im = ax.imshow(matrix, cmap='viridis')
-plt.colorbar(im, ax=ax)
-
-for i in range(NUM_ROWS):
-    for j in range(NUM_COLS):
-        ax.text(j, i, f"{matrix[i, j]:.1f}",
-                ha="center", va="center",
-                color="white" if matrix[i, j] < matrix.max()/2 else "black")
-
-ax.set_title("Output Y (Photodiode Readings)")
-ax.set_xlabel("Column")
-ax.set_ylabel("Row")
-plt.show()
+# Ground truth matrix (you can update as needed)
+X = np.array([
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+])
 
 
-# === Step 6: Plot Combined Y + X Overlay ===
-fig, ax = plt.subplots()
-im = ax.imshow(matrix, cmap='viridis')
-plt.colorbar(im, ax=ax)
+def collect_sensor_matrix():
+    """Reads 5x5 sensor matrix from serial."""
+    ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
+    time.sleep(2)
 
-# Annotate values
-for i in range(NUM_ROWS):
-    for j in range(NUM_COLS):
-        ax.text(j, i, f"{matrix[i, j]:.1f}",
-                ha="center", va="center",
-                color="white" if matrix[i, j] < matrix.max()/2 else "black")
-
-# Overlay object positions (X == 1) as red rectangles
-for i in range(NUM_ROWS):
-    for j in range(NUM_COLS):
-        if X[i, j] == 1:
-            rect = plt.Rectangle((j - 0.5, i - 0.5), 1, 1,
-                                 edgecolor='red', facecolor='none',
-                                 linewidth=2)
-            ax.add_patch(rect)
-
-ax.set_title("Photodiode Readings with Object Overlay (Red Boxes)")
-ax.set_xlabel("Column")
-ax.set_ylabel("Row")
-plt.grid(False)
-plt.show()
+    matrix = np.zeros((NUM_ROWS, NUM_COLS))
+    for row in range(1, NUM_ROWS + 1):
+        for col in range(1, NUM_COLS + 1):
+            cmd = f'DON{row}{col}\n'.encode()
+            ser.write(cmd)
+            line = ser.readline().decode().strip()
+            print(line)
+            try:
+                val = float(line.split(',')[-1])
+            except:
+                val = 0
+            matrix[row - 1, col - 1] = val
+            time.sleep(0.1)
+    ser.close()
+    return matrix
 
 
+def save_sample_to_csv(X, Y, path=CSV_PATH):
+    """Saves one sample (flattened X and Y) to a CSV file."""
+    X_flat = X.flatten()
+    Y_flat = Y.flatten()
+    sample = np.concatenate((X_flat, Y_flat))
 
-import pandas as pd
-import os
+    column_names = [f'X{i}' for i in range(25)] + [f'Y{i}' for i in range(25)]
 
-# Flatten both matrices
-X_flat = X.flatten()
-Y_flat = matrix.flatten()
+    if not os.path.exists(path):
+        df = pd.DataFrame([sample], columns=column_names)
+        df.to_csv(path, index=False)
+        print("✅ Created new dataset.csv and saved sample.")
+    else:
+        df = pd.read_csv(path)
+        df.loc[len(df)] = sample
+        df.to_csv(path, index=False)
+        print("✅ Appended new sample to dataset.csv.")
 
-# Combine into one row
-sample = np.concatenate((X_flat, Y_flat))
 
-# Define column names if first time
-column_names = [f'X{i}' for i in range(25)] + [f'Y{i}' for i in range(25)]
+def plot_overlay(X, Y):
+    """Shows sensor reading with ground truth object overlay."""
+    fig, ax = plt.subplots()
+    im = ax.imshow(Y, cmap='viridis')
+    plt.colorbar(im, ax=ax)
 
-# CSV path
-csv_path = 'dataset.csv'
+    for i in range(NUM_ROWS):
+        for j in range(NUM_COLS):
+            ax.text(j, i, f"{Y[i, j]:.1f}",
+                    ha="center", va="center",
+                    color="white" if Y[i, j] < Y.max()/2 else "black")
 
-# Check if file exists
-if not os.path.exists(csv_path):
-    df = pd.DataFrame([sample], columns=column_names)
-    df.to_csv(csv_path, index=False)
-    print("✅ Created new dataset.csv and saved sample.")
-else:
-    df = pd.read_csv(csv_path)
-    df.loc[len(df)] = sample
-    df.to_csv(csv_path, index=False)
-    print("✅ Appended new sample to dataset.csv.")
+    for i in range(NUM_ROWS):
+        for j in range(NUM_COLS):
+            if X[i, j] == 1:
+                rect = plt.Rectangle((j - 0.5, i - 0.5), 1, 1,
+                                     edgecolor='red', facecolor='none', linewidth=2)
+                ax.add_patch(rect)
+
+    ax.set_title("Photodiode Readings with Object Overlay (Red Boxes)")
+    ax.set_xlabel("Column")
+    ax.set_ylabel("Row")
+    plt.grid(False)
+    plt.show()
+
+
+def run_collection_loop(X, num_runs=20):
+    """Main loop to collect multiple samples."""
+    for i in range(num_runs):
+        print(f"\n🔁 Sample {i + 1}/{num_runs}")
+        Y = collect_sensor_matrix()
+        save_sample_to_csv(X, Y)
+        plot_overlay(X, Y)
+        input("➡️ Press Enter to capture next sample...")
+
+
+if __name__ == "__main__":
+    run_collection_loop(X, NUM_ITERATIONS)
