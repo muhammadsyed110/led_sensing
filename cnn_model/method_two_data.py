@@ -11,15 +11,15 @@ BAUD_RATE = 115200
 NUM_ROWS = 5
 NUM_COLS = 5
 CSV_PATH = 'dataset.csv'
-NUM_ITERATIONS = 1
+NUM_ITERATIONS = 10
 
 # Ground truth matrix (you can update as needed)
 X = np.array([
-    [0, 0, 0, 1, 1],
-    [0, 0, 0, 1, 1],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1],
+    [0, 0, 0, 1, 1]
 ])
 
 
@@ -112,7 +112,7 @@ def run_collection_loop(X, num_runs=20):
     for i in range(num_runs):
         print(f"\n🔁 Sample {i + 1}/{num_runs}")
         Y = collect_sensor_matrix()
-        # save_sample_to_csv(X, Y)
+        save_sample_to_csv(X, Y)
         plot_overlay(X, Y)
 
 

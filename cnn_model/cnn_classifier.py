@@ -7,7 +7,7 @@ from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 import os
 import pickle
-from check_serial_communcation import collect_sensor_matrix
+from method_two_data import collect_sensor_matrix
 
 
 # Constants
@@ -56,7 +56,7 @@ def train_and_evaluate():
     (X_train, X_test, y_train, y_test), num_classes = load_data()
     model = build_cnn_model(num_classes)
 
-    model.fit(X_train, y_train, epochs=20, batch_size=16, validation_split=0.1)
+    model.fit(X_train, y_train, epochs=100, batch_size=16, validation_split=0.1)
     loss, acc = model.evaluate(X_test, y_test)
     print(f"✅ Test Accuracy: {acc:.2f}")
 
