@@ -98,3 +98,32 @@ ax.set_xlabel("Column")
 ax.set_ylabel("Row")
 plt.grid(False)
 plt.show()
+
+
+
+import pandas as pd
+import os
+
+# Flatten both matrices
+X_flat = X.flatten()
+Y_flat = matrix.flatten()
+
+# Combine into one row
+sample = np.concatenate((X_flat, Y_flat))
+
+# Define column names if first time
+column_names = [f'X{i}' for i in range(25)] + [f'Y{i}' for i in range(25)]
+
+# CSV path
+csv_path = 'dataset.csv'
+
+# Check if file exists
+if not os.path.exists(csv_path):
+    df = pd.DataFrame([sample], columns=column_names)
+    df.to_csv(csv_path, index=False)
+    print("✅ Created new dataset.csv and saved sample.")
+else:
+    df = pd.read_csv(csv_path)
+    df.loc[len(df)] = sample
+    df.to_csv(csv_path, index=False)
+    print("✅ Appended new sample to dataset.csv.")
