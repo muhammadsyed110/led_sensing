@@ -11,12 +11,12 @@ BAUD_RATE = 115200
 NUM_ROWS = 5
 NUM_COLS = 5
 CSV_PATH = 'dataset.csv'
-NUM_ITERATIONS = 1
+NUM_ITERATIONS = 20
 
 # Ground truth matrix (you can update as needed)
 X = np.array([
-    [1, 1, 0, 0, 0],
-    [1, 1, 0, 0, 0],
+    [0, 0, 0, 1, 1],
+    [0, 0, 0, 1, 1],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0]
@@ -111,7 +111,6 @@ def run_collection_loop(X, num_runs=20):
         Y = collect_sensor_matrix()
         save_sample_to_csv(X, Y)
         plot_overlay(X, Y)
-        input("➡️ Press Enter to capture next sample...")
 
 
 def activate_leds_from_matrix(X):
