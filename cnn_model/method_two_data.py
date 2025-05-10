@@ -13,8 +13,8 @@ NUM_COLS = 5
 CSV_PATH = 'dataset.csv'
 NUM_ITERATIONS = 10
 
-# Ground truth matrix (you can update as needed)
-X = np.array([
+# Ground truth LED mask (can be updated per test)
+LED_MASK = np.array([
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
@@ -22,12 +22,8 @@ X = np.array([
     [0, 0, 0, 1, 1]
 ])
 
-
-
-
-
 def collect_sensor_matrix():
-    """Turn on each LED, read its corresponding photodiode, turn off LED."""
+    """Turn on each LED, read its corresponding photodiode, then turn off."""
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     time.sleep(2)
 
@@ -59,16 +55,16 @@ def collect_sensor_matrix():
     ser.close()
     return matrix
 
-
-
-
 def save_sample_to_csv(X, Y, path=CSV_PATH):
-    """Saves one sample (flattened X and Y) to a CSV file."""
-    X_flat = X.flatten()
-    Y_flat = Y.flatten()
-    sample = np.concatenate((X_flat, Y_flat))
+    """
+    Saves one sample to CSV.
+    X = LED mask (label), Y = sensor readings (input)
+    """
+    x_flat = X.flatten()
+    y_flat = Y.flatten()
+    sample = np.concatenate((y_flat, x_flat))
 
-    column_names = [f'X{i}' for i in range(25)] + [f'Y{i}' for i in range(25)]
+    column_names = [f'Y{i}' for i in range(25)] + [f'X{i}' for i in range(25)]
 
     if not os.path.exists(path):
         df = pd.DataFrame([sample], columns=column_names)
@@ -80,59 +76,56 @@ def save_sample_to_csv(X, Y, path=CSV_PATH):
         df.to_csv(path, index=False)
         print("✅ Appended new sample to dataset.csv.")
 
-
-def plot_overlay(X, Y):
-    """Shows sensor reading with ground truth object overlay."""
+def plot_overlay(led_mask, sensor_matrix):
+    """Visualize sensor values with overlay of LED mask (red boxes)."""
     fig, ax = plt.subplots()
-    im = ax.imshow(Y, cmap='viridis')
+    im = ax.imshow(sensor_matrix, cmap='viridis')
     plt.colorbar(im, ax=ax)
 
     for i in range(NUM_ROWS):
         for j in range(NUM_COLS):
-            ax.text(j, i, f"{Y[i, j]:.1f}",
+            ax.text(j, i, f"{sensor_matrix[i, j]:.1f}",
                     ha="center", va="center",
-                    color="white" if Y[i, j] < Y.max()/2 else "black")
+                    color="white" if sensor_matrix[i, j] < sensor_matrix.max()/2 else "black")
 
     for i in range(NUM_ROWS):
         for j in range(NUM_COLS):
-            if X[i, j] == 1:
+            if led_mask[i, j] == 1:
                 rect = plt.Rectangle((j - 0.5, i - 0.5), 1, 1,
                                      edgecolor='red', facecolor='none', linewidth=2)
                 ax.add_patch(rect)
 
-    ax.set_title("Photodiode Readings with Object Overlay (Red Boxes)")
+    ax.set_title("Photodiode Readings with LED Overlay")
     ax.set_xlabel("Column")
     ax.set_ylabel("Row")
     plt.grid(False)
     plt.show()
 
-
-def run_collection_loop(X, num_runs=20):
-    """Main loop to collect multiple samples."""
+def run_collection_loop(led_mask, num_runs=20):
+    """Collect multiple samples using the same LED mask."""
     for i in range(num_runs):
         print(f"\n🔁 Sample {i + 1}/{num_runs}")
-        Y = collect_sensor_matrix()
-        save_sample_to_csv(X, Y)
-        plot_overlay(X, Y)
+        sensor_matrix = collect_sensor_matrix()
+        save_sample_to_csv(led_mask, sensor_matrix)
+        plot_overlay(led_mask, sensor_matrix)
 
-
-def activate_leds_from_matrix(X):
-    """Takes a 5x5 numpy array (X) and turns ON LEDs where X[row, col] == 1"""
+def activate_leds_from_matrix(led_mask):
+    """Turn ON LEDs based on a 5x5 mask matrix."""
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     time.sleep(2)
 
     for row in range(NUM_ROWS):
         for col in range(NUM_COLS):
-            if X[row, col] == 1:
-                # Convert to 1-based indexing for LOXxy
+            if led_mask[row, col] == 1:
                 cmd = f'LOX{row + 1}{col + 1}\n'.encode()
-                print(f"🔆 Turning ON LED at Row {row+1}, Col {col+1}")
+                print(f"🔆 Turning ON LED at Row {row + 1}, Col {col + 1}")
                 ser.write(cmd)
-                time.sleep(0.05)  # Allow time for shift register to latch
+                time.sleep(0.05)
 
     ser.close()
 
+# === Main data collection script ===
 if __name__ == "__main__":
-    activate_leds_from_matrix(X)
+    activate_leds_from_matrix(LED_MASK)
     time.sleep(2)
-    run_collection_loop(X, NUM_ITERATIONS)
+    run_collection_loop(LED_MASK, NUM_ITERATIONS)
