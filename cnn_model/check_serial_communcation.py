@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 # 1 where object is present, 0 otherwise
 X = np.array([
     [0, 0, 0, 0, 0],
-    [0, 1, 1, 0, 0],
-    [0, 1, 1, 0, 0],
     [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0]
 ])
 
 # === Step 2: Serial Configuration ===
