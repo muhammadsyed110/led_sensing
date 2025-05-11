@@ -13,14 +13,22 @@ NUM_COLS = 5
 CSV_PATH = 'dataset.csv'
 NUM_ITERATIONS = 1
 
-# Ground truth LED mask (can be updated per test)
-LED_MASK = np.array([
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1],
-    [0, 0, 0, 1, 1]
-])
+LED_TEXT = """
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+1 0 0 0 0
+"""
+
+def parse_led_text(text):
+    lines = text.strip().splitlines()
+    lines = lines[::-1]  # Flip the lines so bottom is first
+    grid = [list(map(int, line.strip().split())) for line in lines]
+    return np.array(grid)
+
+# Ground truth LED mask (update this per test)
+LED_MASK = parse_led_text(LED_TEXT)
 
 def collect_sensor_matrix():
     """Turn on each LED, read its corresponding photodiode, then turn off."""
@@ -29,15 +37,15 @@ def collect_sensor_matrix():
 
     matrix = np.zeros((NUM_ROWS, NUM_COLS))
 
-    for row in reversed(range(1, NUM_ROWS + 1)):
-        for col in reversed(range(1, NUM_COLS + 1)):
-            # Turn on specific LED
-            led_cmd = f'LOX{row}{col}\n'.encode()
+    for row in range(NUM_ROWS):
+        for col in range(NUM_COLS):
+            physical_row = NUM_ROWS - 1 - row  # Flip logical row to match physical
+            led_cmd = f'LOX{physical_row + 1}{col + 1}\n'.encode()
+            diode_cmd = f'DON{physical_row + 1}{col + 1}\n'.encode()
+
             ser.write(led_cmd)
             time.sleep(0.1)
 
-            # Read the matching photodiode
-            diode_cmd = f'DON{row}{col}\n'.encode()
             ser.write(diode_cmd)
             line = ser.readline().decode().strip()
             print(line)
@@ -45,11 +53,11 @@ def collect_sensor_matrix():
                 val = float(line.split(',')[-1])
             except:
                 val = 0
-            matrix[row - 1, col - 1] = val
+
+            matrix[row, col] = val  # store in logical top-down matrix
             time.sleep(0.1)
 
-            # Turn off all LEDs
-            ser.write(b'LAF\n')
+            ser.write(b'LAF\n')  # Turn off all LEDs
             time.sleep(0.1)
 
     ser.close()
@@ -57,13 +65,12 @@ def collect_sensor_matrix():
 
 def save_sample_to_csv(X, Y, path=CSV_PATH):
     """
-    Saves one sample to CSV.
+    Save one sample to CSV.
     X = LED mask (label), Y = sensor readings (input)
     """
     x_flat = X.flatten()
     y_flat = Y.flatten()
     sample = np.concatenate((y_flat, x_flat))
-
     column_names = [f'Y{i}' for i in range(25)] + [f'X{i}' for i in range(25)]
 
     if not os.path.exists(path):
@@ -78,28 +85,33 @@ def save_sample_to_csv(X, Y, path=CSV_PATH):
 
 def plot_overlay(led_mask, sensor_matrix):
     """Visualize sensor values with overlay of LED mask (red boxes)."""
+    flipped_matrix = np.flipud(sensor_matrix)
+    flipped_mask = np.flipud(led_mask)
+
     fig, ax = plt.subplots()
-    im = ax.imshow(sensor_matrix, cmap='viridis')
+    im = ax.imshow(flipped_matrix, cmap='viridis')  # origin default is 'upper'
+
     plt.colorbar(im, ax=ax)
 
     for i in range(NUM_ROWS):
         for j in range(NUM_COLS):
-            ax.text(j, i, f"{sensor_matrix[i, j]:.1f}",
+            ax.text(j, i, f"{flipped_matrix[i, j]:.1f}",
                     ha="center", va="center",
-                    color="white" if sensor_matrix[i, j] < sensor_matrix.max()/2 else "black")
+                    color="white" if flipped_matrix[i, j] < flipped_matrix.max() / 2 else "black")
 
     for i in range(NUM_ROWS):
         for j in range(NUM_COLS):
-            if led_mask[i, j] == 1:
+            if flipped_mask[i, j] == 1:
                 rect = plt.Rectangle((j - 0.5, i - 0.5), 1, 1,
                                      edgecolor='red', facecolor='none', linewidth=2)
                 ax.add_patch(rect)
 
-    ax.set_title("Photodiode Readings with LED Overlay")
+    ax.set_title("Photodiode Readings with LED Overlay (Matched Layout)")
     ax.set_xlabel("Column")
     ax.set_ylabel("Row")
     plt.grid(False)
     plt.show()
+
 
 def run_collection_loop(led_mask, num_runs=20):
     """Collect multiple samples using the same LED mask."""
@@ -110,7 +122,7 @@ def run_collection_loop(led_mask, num_runs=20):
         plot_overlay(led_mask, sensor_matrix)
 
 def activate_leds_from_matrix(led_mask):
-    """Turn ON LEDs based on a 5x5 mask matrix."""
+    """Turn ON LEDs based on a 5x5 mask matrix (for visual confirmation)."""
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     time.sleep(2)
 
@@ -124,8 +136,8 @@ def activate_leds_from_matrix(led_mask):
 
     ser.close()
 
-# === Main data collection script ===
+# === Main Execution ===
 if __name__ == "__main__":
-    activate_leds_from_matrix(LED_MASK)
+    activate_leds_from_matrix(LED_MASK)  # 🔆 Confirm visually
     time.sleep(2)
     run_collection_loop(LED_MASK, NUM_ITERATIONS)
