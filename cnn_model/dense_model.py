@@ -119,6 +119,37 @@ def open_feedback_gui(sensor_matrix):
 
     root.mainloop()
 
+# === Updated plot_overlay() with flip inside ===
+def plot_overlay(led_mask, sensor_matrix):
+    """Visualize sensor values with overlay of LED mask (red boxes)."""
+    flipped_matrix = np.flipud(sensor_matrix)
+    flipped_mask = np.flipud(led_mask)
+
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
+    im = ax.imshow(flipped_matrix, cmap='viridis')
+
+    plt.colorbar(im, ax=ax)
+
+    for i in range(NUM_ROWS):
+        for j in range(NUM_COLS):
+            ax.text(j, i, f"{flipped_matrix[i, j]:.1f}",
+                    ha="center", va="center",
+                    color="white" if flipped_matrix[i, j] < flipped_matrix.max() / 2 else "black")
+
+    for i in range(NUM_ROWS):
+        for j in range(NUM_COLS):
+            if flipped_mask[i, j] == 1:
+                rect = plt.Rectangle((j - 0.5, i - 0.5), 1, 1,
+                                     edgecolor='red', facecolor='none', linewidth=2)
+                ax.add_patch(rect)
+
+    ax.set_title("Photodiode Readings with LED Overlay (Matched Layout)")
+    ax.set_xlabel("Column")
+    ax.set_ylabel("Row")
+    plt.grid(False)
+    plt.show()
+
 # === Main Execution ===
 if __name__ == '__main__':
     #train_and_evaluate()
@@ -130,7 +161,7 @@ if __name__ == '__main__':
     predicted_led_mask = predict_new_sample(sensor_matrix.flatten())
     predicted_mask_2d = predicted_led_mask.reshape(NUM_ROWS, NUM_COLS)
 
-    # Visualize prediction
+    # Visualize prediction (auto-flipped in plot)
     plot_overlay(predicted_mask_2d, sensor_matrix)
 
     # Ask for feedback

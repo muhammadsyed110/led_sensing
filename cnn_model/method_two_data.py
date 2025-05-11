@@ -11,7 +11,7 @@ BAUD_RATE = 115200
 NUM_ROWS = 5
 NUM_COLS = 5
 CSV_PATH = 'dataset.csv'
-NUM_ITERATIONS = 20
+NUM_ITERATIONS = 1
 
 LED_TEXT = """
 0 0 0 0 0
@@ -39,9 +39,8 @@ def collect_sensor_matrix():
 
     for row in range(NUM_ROWS):
         for col in range(NUM_COLS):
-            physical_row = NUM_ROWS - 1 - row  # Flip logical row to match physical
-            led_cmd = f'LOX{physical_row + 1}{col + 1}\n'.encode()
-            diode_cmd = f'DON{physical_row + 1}{col + 1}\n'.encode()
+            led_cmd = f'LOX{row + 1}{col + 1}\n'.encode()
+            diode_cmd = f'DON{row + 1}{col + 1}\n'.encode()
 
             ser.write(led_cmd)
             time.sleep(0.1)
