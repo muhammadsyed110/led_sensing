@@ -109,9 +109,10 @@ def open_feedback_gui(sensor_matrix):
 
     for i in range(NUM_ROWS):
         for j in range(NUM_COLS):
-            buttons[i][j] = tk.Button(root, text=f"{i},{j}", width=6, height=2,
-                                      bg="lightgray", command=lambda i=i, j=j: toggle(i, j))
-            buttons[i][j].grid(row=i, column=j)
+            logical_row = NUM_ROWS - 1 - i  # Flip visual to logical
+            buttons[logical_row][j] = tk.Button(root, text=f"{logical_row},{j}", width=6, height=2,
+                                                bg="lightgray", command=lambda i=logical_row, j=j: toggle(i, j))
+            buttons[logical_row][j].grid(row=i, column=j)
 
     submit_btn = tk.Button(root, text="✅ OK", command=on_submit)
     submit_btn.grid(row=NUM_ROWS, column=0, columnspan=NUM_COLS, pady=10)
