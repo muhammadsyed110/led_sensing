@@ -37,10 +37,10 @@ def save_feedback(sensor_matrix, correct_led_mask):
     row = flat_sensor + flat_led
     columns = SENSOR_COLUMNS + LED_COLUMNS
     df = pd.DataFrame([row], columns=columns)
-    if not os.path.exists('new_feedback.csv'):
-        df.to_csv('new_feedback.csv', index=False)
+    if not os.path.exists('dataset.csv'):
+        df.to_csv('dataset.csv', index=False)
     else:
-        df.to_csv('new_feedback.csv', mode='a', header=False, index=False)
+        df.to_csv('dataset.csv', mode='a', header=False, index=False)
 
 # === Model ===
 def build_regression_model():
@@ -65,12 +65,12 @@ def train_and_evaluate():
 
 def retrain_with_feedback():
     original = pd.read_csv('dataset.csv')
-    if os.path.exists('new_feedback.csv'):
-        feedback = pd.read_csv('new_feedback.csv')
+    if os.path.exists('dataset.csv'):
+        feedback = pd.read_csv('dataset.csv')
         feedback_augmented = pd.concat([feedback] * 3, ignore_index=True)
         combined = pd.concat([original, feedback_augmented], ignore_index=True)
         combined.to_csv('dataset_fixed.csv', index=False)
-        os.remove('new_feedback.csv')
+        os.remove('dataset.csv')
         print("📈 Retraining with feedback...")
         train_and_evaluate()
     else:

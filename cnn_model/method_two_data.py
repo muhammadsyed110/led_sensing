@@ -14,11 +14,11 @@ CSV_PATH = 'dataset.csv'
 NUM_ITERATIONS = 1
 
 LED_TEXT = """
+1 1 0 0 0
+1 1 0 0 0
 0 0 0 0 0
 0 0 0 0 0
 0 0 0 0 0
-0 1 1 0 0
-0 1 1 0 0
 """
 
 def parse_led_text(text):
