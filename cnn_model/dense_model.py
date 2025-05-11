@@ -88,7 +88,15 @@ def predict_new_sample(sensor_values):
     prediction = model.predict(sensor_scaled)[0]
     predicted_mask = (prediction > 0.5).astype(int)
     print("🔍 Predicted LED mask (5x5):")
-    print(predicted_mask.reshape(NUM_ROWS, NUM_COLS))
+    #print(predicted_mask.reshape(NUM_ROWS, NUM_COLS))
+
+    # Flip vertically to match physical layout
+    predicted_mask_grid = predicted_mask.reshape(NUM_ROWS, NUM_COLS)
+    flipped = np.flipud(predicted_mask_grid)
+
+    print("🔍 Predicted LED mask (5x5):")
+    for row in flipped:
+        print(" ".join(map(str, row)))
     return predicted_mask
 
 # === GUI Feedback ===
