@@ -21,7 +21,7 @@ SCALER_FILE = 'x_scaler.pkl'
 buttons = [[None for _ in range(NUM_COLS)] for _ in range(NUM_ROWS)]
 
 # === Data Load & Save ===
-def load_data(path='dataset_fixed.csv'):
+def load_data(path='dataset.csv'):
     df = pd.read_csv(path)
     X = df[SENSOR_COLUMNS].values.astype(np.float32)
     Y = df[LED_COLUMNS].values.astype(np.float32)
@@ -121,6 +121,8 @@ def open_feedback_gui(sensor_matrix):
 
 # === Main Execution ===
 if __name__ == '__main__':
+    #train_and_evaluate()
+
     # Get sensor matrix
     sensor_matrix = collect_sensor_matrix()  # Shape (5, 5)
 
