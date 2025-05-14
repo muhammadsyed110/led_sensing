@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import json
 
 # Configuration
 COM_PORT = 'COM3'
@@ -11,27 +12,26 @@ BAUD_RATE = 115200
 NUM_ROWS = 5
 NUM_COLS = 5
 CSV_PATH = '../dataset.csv'
-NUM_ITERATIONS = 1
+NUM_ITERATIONS = 10
 
 LED_TEXT = """
+0 0 0 1 1
+0 0 0 1 1
 0 0 0 0 0
 0 0 0 0 0
 0 0 0 0 0
-0 0 1 1 0
-0 0 1 1 0
 """
 
 def parse_led_text(text):
     lines = text.strip().splitlines()
-    lines = lines[::-1]  # Flip the lines so bottom is first
+    lines = lines[::-1]
     grid = [list(map(int, line.strip().split())) for line in lines]
     return np.array(grid)
 
-# Ground truth LED mask (update this per test)
 LED_MASK = parse_led_text(LED_TEXT)
 
 def collect_sensor_matrix():
-    """Turn on each LED, read its corresponding photodiode, then turn off."""
+    """Use new Arduino interface: send LOXxy + DONxy + GETVAL for each LED/PD pair."""
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     time.sleep(2)
 
@@ -39,34 +39,35 @@ def collect_sensor_matrix():
 
     for row in range(NUM_ROWS):
         for col in range(NUM_COLS):
-            led_cmd = f'LOX{row + 1}{col + 1}\n'.encode()
-            diode_cmd = f'DON{row + 1}{col + 1}\n'.encode()
+            led_cmd = f'LOX{row+1}{col+1}\n'.encode()
+            pd_cmd = f'DON{row+1}{col+1}\n'.encode()
 
             ser.write(led_cmd)
-            time.sleep(0.1)
+            time.sleep(0.05)
 
-            ser.write(diode_cmd)
+            ser.write(pd_cmd)
+            time.sleep(0.05)
+
+            ser.write(b'GETVAL\n')
             line = ser.readline().decode().strip()
             print(line)
+
             try:
-                val = float(line.split(',')[-1])
+                data = json.loads(line)
+                val = float(data['val'])
             except:
-                val = 0
+                val = 0.0  # fallback in case of error
 
-            matrix[row, col] = val  # store in logical top-down matrix
-            time.sleep(0.1)
+            matrix[row, col] = val
+            time.sleep(0.05)
 
-            ser.write(b'LAF\n')  # Turn off all LEDs
-            time.sleep(0.1)
+            ser.write(b'LAF\n')
+            time.sleep(0.05)
 
     ser.close()
     return matrix
 
 def save_sample_to_csv(X, Y, path=CSV_PATH):
-    """
-    Save one sample to CSV.
-    X = LED mask (label), Y = sensor readings (input)
-    """
     x_flat = X.flatten()
     y_flat = Y.flatten()
     sample = np.concatenate((y_flat, x_flat))
@@ -83,13 +84,11 @@ def save_sample_to_csv(X, Y, path=CSV_PATH):
         print("✅ Appended new sample to dataset.csv.")
 
 def plot_overlay(led_mask, sensor_matrix):
-    """Visualize sensor values with overlay of LED mask (red boxes)."""
     flipped_matrix = np.flipud(sensor_matrix)
     flipped_mask = np.flipud(led_mask)
 
     fig, ax = plt.subplots()
-    im = ax.imshow(flipped_matrix, cmap='viridis')  # origin default is 'upper'
-
+    im = ax.imshow(flipped_matrix, cmap='viridis')
     plt.colorbar(im, ax=ax)
 
     for i in range(NUM_ROWS):
@@ -105,15 +104,13 @@ def plot_overlay(led_mask, sensor_matrix):
                                      edgecolor='red', facecolor='none', linewidth=2)
                 ax.add_patch(rect)
 
-    ax.set_title("Photodiode Readings with LED Overlay (Matched Layout)")
+    ax.set_title("Photodiode Readings with LED Overlay")
     ax.set_xlabel("Column")
     ax.set_ylabel("Row")
     plt.grid(False)
     plt.show()
 
-
-def run_collection_loop(led_mask, num_runs=20):
-    """Collect multiple samples using the same LED mask."""
+def run_collection_loop(led_mask, num_runs=1):
     for i in range(num_runs):
         print(f"\n🔁 Sample {i + 1}/{num_runs}")
         sensor_matrix = collect_sensor_matrix()
@@ -121,7 +118,7 @@ def run_collection_loop(led_mask, num_runs=20):
         plot_overlay(led_mask, sensor_matrix)
 
 def activate_leds_from_matrix(led_mask):
-    """Turn ON LEDs based on a 5x5 mask matrix (for visual confirmation)."""
+    """Use LOX commands only for visual confirmation (if needed)."""
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     time.sleep(2)
 
@@ -133,10 +130,12 @@ def activate_leds_from_matrix(led_mask):
                 ser.write(cmd)
                 time.sleep(0.05)
 
+    time.sleep(1)
+    ser.write(b'LAF\n')
     ser.close()
 
 # === Main Execution ===
 if __name__ == "__main__":
-    activate_leds_from_matrix(LED_MASK)  # 🔆 Confirm visually
-    time.sleep(2)
+    activate_leds_from_matrix(LED_MASK)  # Optional visual confirm
+    time.sleep(1)
     run_collection_loop(LED_MASK, NUM_ITERATIONS)

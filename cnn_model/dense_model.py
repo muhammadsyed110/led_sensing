@@ -159,7 +159,7 @@ def plot_overlay(led_mask, sensor_matrix):
 
 # === Main Execution ===
 if __name__ == '__main__':
-    #train_and_evaluate()
+    train_and_evaluate()
 
     # Get sensor matrix
     sensor_matrix = collect_sensor_matrix()  # Shape (5, 5)
