@@ -14,8 +14,8 @@ from method_two_data import collect_sensor_matrix
 NUM_ROWS, NUM_COLS = 5, 5
 X_COLUMNS = [f'X{i}' for i in range(25)]
 Y_COLUMNS = [f'Y{i}' for i in range(25)]
-LABEL_MAP_FILE = 'label_mapping.pkl'
-MODEL_FILE = 'cnn_model.h5'
+LABEL_MAP_FILE = '../label_mapping.pkl'
+MODEL_FILE = '../cnn_model.h5'
 
 
 def load_data(path='dataset.csv'):

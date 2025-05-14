@@ -10,7 +10,7 @@ COM_PORT = 'COM3'
 BAUD_RATE = 115200
 NUM_ROWS = 5
 NUM_COLS = 5
-CSV_PATH = 'dataset.csv'
+CSV_PATH = '../dataset.csv'
 NUM_ITERATIONS = 20
 
 # Ground truth matrix (you can update as needed)

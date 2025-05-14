@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('dataset.csv')
+df = pd.read_csv('../dataset.csv')
 
 X_cols = [f'X{i}' for i in range(25)]
 Y_cols = [f'Y{i}' for i in range(25)]

@@ -1,7 +1,6 @@
 import pickle
 import numpy as np
 import pandas as pd
-import tensorflow as tf
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.losses import MeanSquaredError
@@ -10,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import os
 import tkinter as tk
-from method_two_data import collect_sensor_matrix, plot_overlay  # Your methods
+from cnn_model.misc.method_two_data import collect_sensor_matrix  # Your methods
 
 # Constants
 NUM_ROWS, NUM_COLS = 5, 5
