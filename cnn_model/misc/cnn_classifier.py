@@ -1,13 +1,12 @@
 import numpy as np
 import pandas as pd
-import tensorflow as tf
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 import os
 import pickle
-from method_two_data import collect_sensor_matrix
+from cnn_model.method_two_data import collect_sensor_matrix
 
 
 # Constants

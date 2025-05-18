@@ -10,7 +10,7 @@ from sklearn.preprocessing import MinMaxScaler
 import os
 import tkinter as tk
 
-from cnn_model.misc.method_two_data import collect_sensor_matrix
+from cnn_model.method_two_data import collect_sensor_matrix
 
 # Constants
 NUM_ROWS, NUM_COLS = 5, 5

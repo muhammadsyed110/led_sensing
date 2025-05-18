@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import os
 
-from cnn_model.misc.method_two_data import collect_sensor_matrix
+from cnn_model.method_two_data import collect_sensor_matrix
 
 # Constants
 NUM_ROWS, NUM_COLS = 5, 5
