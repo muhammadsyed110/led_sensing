@@ -12,15 +12,16 @@ BAUD_RATE = 115200
 NUM_ROWS = 5
 NUM_COLS = 5
 CSV_PATH = '../dataset.csv'
-NUM_ITERATIONS = 10
+NUM_ITERATIONS = 1
 
 LED_TEXT = """
-0 0 0 1 1
-0 0 0 1 1
+0 0 0 0 0
+0 0 0 0 0
 0 0 0 0 0
 0 0 0 0 0
 0 0 0 0 0
 """
+
 
 def parse_led_text(text):
     lines = text.strip().splitlines()

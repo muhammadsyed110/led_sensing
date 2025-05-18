@@ -9,7 +9,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import os
 import tkinter as tk
-from cnn_model.misc.method_two_data import collect_sensor_matrix  # Your methods
+
+from cnn_model.misc.method_two_data import collect_sensor_matrix
 
 # Constants
 NUM_ROWS, NUM_COLS = 5, 5
@@ -159,10 +160,14 @@ def plot_overlay(led_mask, sensor_matrix):
 
 # === Main Execution ===
 if __name__ == '__main__':
-    train_and_evaluate()
+    #train_and_evaluate()
 
     # Get sensor matrix
     sensor_matrix = collect_sensor_matrix()  # Shape (5, 5)
+
+
+
+
 
     # Predict LED mask
     predicted_led_mask = predict_new_sample(sensor_matrix.flatten())
