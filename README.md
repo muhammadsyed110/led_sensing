@@ -19,7 +19,7 @@ This stage of the pipeline handles real-world data collection from an LED matrix
 - Collects N (user-defined) measurements from the hardware via serial communication.
 - Stores data in an Excel file with time-based naming.
 - Averages across all measurements to reduce noise.
-- Writes physical setyp configuration details into the Excel file.
+- Writes physical setup configuration details into the Excel file.
 
 #### **Key Functions:**
 - `Initialize_Device()` – Connects to the Arduino.
