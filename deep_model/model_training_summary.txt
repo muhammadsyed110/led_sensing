@@ -1,0 +1,42 @@
+Deep Learning Model Training Summary
+====================================
+
+**Model Architecture:**
+- Convolutional Neural Network (CNN) using TensorFlow Keras Sequential API
+- Input: 25x25 matrix (single channel)
+- Output: 15x13 grid (single channel, sigmoid activation)
+- Layers: Conv2D, MaxPooling2D, Dropout, Dense, Reshape
+
+**Dataset:**
+- Number of samples: ~111 (from Excel extraction step)
+- Input normalization: Divided by 500.0
+- Train/test split: 80% train, 20% test
+
+**Training Details:**
+- Epochs: 50
+- Batch size: 16
+- Loss: Binary Crossentropy
+- Optimizer: Adam
+- Validation split: 10% of training data
+
+**Training Results:**
+- Initial training accuracy: ~0.70 (Epoch 1)
+- Final training accuracy: ~0.96 (Epoch 50)
+- Final training loss: ~0.13 (Epoch 50)
+- Validation accuracy: ~0.95 throughout training
+- Validation loss: ~0.16 at final epoch
+
+**Test Performance:**
+- Test accuracy: 0.9554
+- Test loss: 0.1480
+
+**Model Efficiency & Performance:**
+- The model converged rapidly, reaching >0.95 accuracy within a few epochs.
+- Both training and validation losses decreased and remained low, indicating good generalization.
+- No signs of overfitting were observed (training and validation metrics are similar).
+
+**Summary:**
+The trained CNN model achieved high accuracy on both training and test sets for predicting 15x13 label grids from 25x25 input matrices. The model is efficient, converging quickly and generalizing well to unseen data. This suggests the chosen architecture and preprocessing steps are effective for the given dataset.
+
+---
+Generated automatically from notebook results.

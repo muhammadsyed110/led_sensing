@@ -13,3 +13,4 @@
 /cnn_model/regression_model.keras
 /cnn_model/x_scaler.pkl
 /cnn_model/.ipynb_checkpoints/*
+*/.ipynb_checkpoints/*
