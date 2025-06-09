@@ -14,3 +14,6 @@
 /cnn_model/x_scaler.pkl
 /cnn_model/.ipynb_checkpoints/*
 */.ipynb_checkpoints/*
+/min_unet_model/train_data/
+/min_unet_model/X/
+/min_unet_model/Y/
