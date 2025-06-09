@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.losses import MeanSquaredError
@@ -57,11 +58,13 @@ def build_regression_model():
 def train_and_evaluate():
     X_train, X_test, Y_train, Y_test = load_data()
     model = build_regression_model()
-    model.fit(X_train, Y_train, epochs=100, batch_size=16, validation_split=0.1)
+    history = model.fit(X_train, Y_train, epochs=100, batch_size=16, validation_split=0.1)
     loss, mae = model.evaluate(X_test, Y_test)
     print(f"✅ Test MAE: {mae:.2f}")
+    print(f"📊 Final Training Loss: {history.history['loss'][-1]:.4f}")
+    print(f"📉 Final Validation Loss: {history.history['val_loss'][-1]:.4f}")
     model.save(MODEL_FILE)
-    return model
+    return model, history
 
 def retrain_with_feedback():
     original = pd.read_csv('dataset.csv')
@@ -87,10 +90,7 @@ def predict_new_sample(sensor_values):
     sensor_scaled = x_scaler.transform(sensor_values)
     prediction = model.predict(sensor_scaled)[0]
     predicted_mask = (prediction > 0.5).astype(int)
-    print("🔍 Predicted LED mask (5x5):")
-    #print(predicted_mask.reshape(NUM_ROWS, NUM_COLS))
 
-    # Flip vertically to match physical layout
     predicted_mask_grid = predicted_mask.reshape(NUM_ROWS, NUM_COLS)
     flipped = np.flipud(predicted_mask_grid)
 
@@ -129,14 +129,11 @@ def open_feedback_gui(sensor_matrix):
 
 # === Updated plot_overlay() with flip inside ===
 def plot_overlay(led_mask, sensor_matrix):
-    """Visualize sensor values with overlay of LED mask (red boxes)."""
     flipped_matrix = np.flipud(sensor_matrix)
     flipped_mask = np.flipud(led_mask)
 
-    import matplotlib.pyplot as plt
     fig, ax = plt.subplots()
     im = ax.imshow(flipped_matrix, cmap='viridis')
-
     plt.colorbar(im, ax=ax)
 
     for i in range(NUM_ROWS):
@@ -160,23 +157,29 @@ def plot_overlay(led_mask, sensor_matrix):
 
 # === Main Execution ===
 if __name__ == '__main__':
-    #train_and_evaluate()
+    model, history = train_and_evaluate()
+
+    # Plot training vs validation loss
+    plt.plot(history.history['loss'], label='Training Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.title('Model Training Performance')
+    plt.xlabel('Epoch')
+    plt.ylabel('Mean Squared Error')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
     # Get sensor matrix
-    sensor_matrix = collect_sensor_matrix()  # Shape (5, 5)
-
-
-
-
+    sensor_matrix = collect_sensor_matrix()
 
     # Predict LED mask
     predicted_led_mask = predict_new_sample(sensor_matrix.flatten())
     predicted_mask_2d = predicted_led_mask.reshape(NUM_ROWS, NUM_COLS)
 
-    # Visualize prediction (auto-flipped in plot)
+    # Visualize prediction
     plot_overlay(predicted_mask_2d, sensor_matrix)
 
-    # Ask for feedback
+    # Feedback
     user_input = input("❓ Is this prediction correct? (y/n): ").strip().lower()
     if user_input == 'n':
         print("🖱️ Open GUI to select correct LED positions...")
