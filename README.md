@@ -29,9 +29,9 @@ This stage of the pipeline handles real-world data collection from an LED matrix
 
 ![IMG20250224222229.jpg](images\IMG20250224222229.jpg)
 
-![IMG20250224232735.jpg](IMG20250224232735.jpg)
+![IMG20250224232735.jpg](images/IMG20250224232735.jpg)
 
-![img_3.png](img_3.png)
+![img_3.png](images/img_3.png)
 
 ---
 
@@ -50,7 +50,7 @@ Defines physical parameters and grid layout of the experiment.
 
 ✅ This setup file is read and verified in `Collect_Multiple_Data.m`.
 
-![img_2.png](img_2.png)
+![img_2.png](images/img_2.png)
 
 ---
 
@@ -67,13 +67,13 @@ Visualizes collected data from the Excel file.
 - Also prints physical setup info to console or GUI.
 
 ### **HeatMap**
-![Heatmap_LED_Matrix_2025_02_24_23_24_01.jpg](Heatmap_LED_Matrix_2025_02_24_23_24_01.jpg)
+![Heatmap_LED_Matrix_2025_02_24_23_24_01.jpg](images/Heatmap_LED_Matrix_2025_02_24_23_24_01.jpg)
 
 ### **Graph**
-![Graph_LED_Matrix_2025_02_24_23_24_01.jpg](Graph_LED_Matrix_2025_02_24_23_24_01.jpg)
+![Graph_LED_Matrix_2025_02_24_23_24_01.jpg](images/Graph_LED_Matrix_2025_02_24_23_24_01.jpg)
 
 ### **Overall Graph**
-![Overall_Graph_LED_Matrix_2025_02_24_23_24_01.jpg](Overall_Graph_LED_Matrix_2025_02_24_23_24_01.jpg)
+![Overall_Graph_LED_Matrix_2025_02_24_23_24_01.jpg](images/Overall_Graph_LED_Matrix_2025_02_24_23_24_01.jpg)
 ---
 
 ### 4️⃣ [`Data_Image_Mask.m`](./matlabPipeline/Data_Image_Mask.m)
@@ -85,12 +85,12 @@ Processes the Excel files to create image/mask datasets.
 1. **Reads binary matrix from `Physical_Setup` sheet**  
    → Generates **mask images** (binary object segmentation).
 
-![img_4.png](img_4.png)
+![img_4.png](images/img_4.png)
 
 2. **Reads averaged sensor data**  
    → Converts to **grayscale images** for model input.
 
-![img_6.png](img_6.png)
+![img_6.png](images/img_6.png)
 
 3. **Preprocessing:**  
    - Resizes and normalizes images.
