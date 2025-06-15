@@ -27,7 +27,7 @@ This stage of the pipeline handles real-world data collection from an LED matrix
 - `Average()` – Averages readings from multiple Excel sheets.
 - `Arduino_Data_Collection_L()` / `D()` – Control which device remains fixed during data collection (LED or Diode).
 
-![IMG20250224222229.jpg](images\IMG20250224222229.jpg)
+![IMG20250224222229.jpg](images/IMG20250224222229.jpg)
 
 ![IMG20250224232735.jpg](images/IMG20250224232735.jpg)
 
